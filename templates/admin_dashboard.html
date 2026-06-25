@@ -102,13 +102,9 @@
 
 <script>
     async function loadEvents() {
-        const token = localStorage.getItem("token");
-
-        const response = await fetch("/add_event", {
-            headers: { "Authorization": "Bearer " + token }
-        });
-
+        const response = await fetch("/events");
         const data = await response.json();
+
         const container = document.getElementById("events");
         container.innerHTML = "";
 
@@ -127,45 +123,44 @@
         });
     }
 
-async function createEvent() {
-    const token = localStorage.getItem("token");
+    async function createEvent() {
+        const token = localStorage.getItem("token");
 
-    const body = {
-        title: document.getElementById("title").value,
-        date: document.getElementById("date").value,
-        category: document.getElementById("category").value,
-        price: Number(document.getElementById("price").value),
-        capacity: Number(document.getElementById("capacity").value),
-        description: document.getElementById("description").value
-    };
+        const body = {
+            title: document.getElementById("title").value,
+            date: document.getElementById("date").value,
+            category: document.getElementById("category").value,
+            price: Number(document.getElementById("price").value),
+            capacity: Number(document.getElementById("capacity").value),
+            description: document.getElementById("description").value
+        };
 
-    const response = await fetch("/add_event", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token
-        },
-        body: JSON.stringify(body)
-    });
+        const response = await fetch("/add_event", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify(body)
+        });
 
-    const data = await response.json();
-    alert(data.message || data.Erreur);
-    loadEvents();
-}
+        const data = await response.json();
+        alert(data.message || data.Erreur);
+        loadEvents();
+    }
 
-async function deleteEvent(id) {
-    const token = localStorage.getItem("token");
+    async function deleteEvent(id) {
+        const token = localStorage.getItem("token");
 
-    const response = await fetch("/event/delete/" + id, {
-        method: "DELETE",
-        headers: { "Authorization": "Bearer " + token }
-    });
+        const response = await fetch("/event/delete/" + id, {
+            method: "DELETE",
+            headers: { "Authorization": "Bearer " + token }
+        });
 
-    const data = await response.json();
-    alert(data.message || data.Erreur);
-    loadEvents();
-}
-
+        const data = await response.json();
+        alert(data.message || data.Erreur);
+        loadEvents();
+    }
 
     loadEvents();
 </script>
