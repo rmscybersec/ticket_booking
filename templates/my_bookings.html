@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes réservations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .booking {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #b52a37;
+        }
+    </style>
+</head>
+<body>
+
+<div style="margin-bottom: 20px;">
+    <button onclick="goToEvents()">Événements</button>
+    <button onclick="goToBookings()">Mes réservations</button>
+    <button id="adminBtn" onclick="goToAdmin()" style="display:none;">Admin Dashboard</button>
+    <button onclick="logout()">Déconnexion</button>
+</div>
+
+<script>
+    function goToEvents() {
+        window.location.href = "/events_page";
+    }
+
+    function goToBookings() {
+        window.location.href = "/my_bookings_page";
+    }
+
+    function goToAdmin() {
+        window.location.href = "/admin_dashboard";
+    }
+
+    function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        window.location.href = "/login_page";
+    }
+
+    // Afficher le bouton admin seulement si role = admin
+    const role = localStorage.getItem("role");
+    if (role === "admin") {
+        document.getElementById("adminBtn").style.display = "inline-block";
+    }
+</script>
+
+
+<h1>Mes réservations</h1>
+<div id="bookings"></div>
+
+<script>
+    async function loadBookings() {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch("/my_bookings", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const data = await response.json();
+
+        const container = document.getElementById("bookings");
+        container.innerHTML = "";
+
+        data.forEach(b => {
+            const div = document.createElement("div");
+            div.className = "booking";
+            div.innerHTML = `
+                <h3>${b.event_title}</h3>
+                <p><strong>Date :</strong> ${b.event_date}</p>
+                <p><strong>Statut :</strong> ${b.status}</p>
+                <p><strong>Quantité :</strong> ${b.quantity}</p>
+                <button onclick="cancelBooking(${b.booking_id})">Annuler</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    async function cancelBooking(id) {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch("/cancel_booking/" + id, {
+            method: "PUT",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const data = await response.json();
+        alert(data.message || data.Erreur);
+
+        loadBookings();
+    }
+
+    loadBookings();
+</script>
+
+</body>
+</html>
