@@ -48,8 +48,8 @@ def add_user():
 
 #ROUTE : Ajouter un événement
 @app.route('/add_event', methods=['POST'])
-@jwt_required()
 @admin_required
+@jwt_required()
 def add_event():
 #Récupération des données envoyées en JSON
     data = request.get_json()
