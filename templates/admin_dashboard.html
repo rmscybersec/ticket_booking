@@ -92,6 +92,7 @@
     <input id="date" placeholder="Date (YYYY-MM-DD HH:MM:SS)">
     <input id="category" placeholder="Catégorie">
     <input id="price" placeholder="Prix">
+    <input id="capacity" placeholder="Capacité">
     <textarea id="description" placeholder="Description"></textarea>
     <button onclick="createEvent()">Créer</button>
 </div>
@@ -103,7 +104,7 @@
     async function loadEvents() {
         const token = localStorage.getItem("token");
 
-        const response = await fetch("/events", {
+        const response = await fetch("/add_event", {
             headers: { "Authorization": "Bearer " + token }
         });
 
@@ -126,43 +127,45 @@
         });
     }
 
-    async function createEvent() {
-        const token = localStorage.getItem("token");
+async function createEvent() {
+    const token = localStorage.getItem("token");
 
-        const body = {
-            title: document.getElementById("title").value,
-            date: document.getElementById("date").value,
-            category: document.getElementById("category").value,
-            price: document.getElementById("price").value,
-            description: document.getElementById("description").value
-        };
+    const body = {
+        title: document.getElementById("title").value,
+        date: document.getElementById("date").value,
+        category: document.getElementById("category").value,
+        price: Number(document.getElementById("price").value),
+        capacity: Number(document.getElementById("capacity").value),
+        description: document.getElementById("description").value
+    };
 
-        const response = await fetch("/create_event", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
-            },
-            body: JSON.stringify(body)
-        });
+    const response = await fetch("/add_event", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(body)
+    });
 
-        const data = await response.json();
-        alert(data.message || data.Erreur);
-        loadEvents();
-    }
+    const data = await response.json();
+    alert(data.message || data.Erreur);
+    loadEvents();
+}
 
-    async function deleteEvent(id) {
-        const token = localStorage.getItem("token");
+async function deleteEvent(id) {
+    const token = localStorage.getItem("token");
 
-        const response = await fetch("/delete_event/" + id, {
-            method: "DELETE",
-            headers: { "Authorization": "Bearer " + token }
-        });
+    const response = await fetch("/event/delete/" + id, {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + token }
+    });
 
-        const data = await response.json();
-        alert(data.message || data.Erreur);
-        loadEvents();
-    }
+    const data = await response.json();
+    alert(data.message || data.Erreur);
+    loadEvents();
+}
+
 
     loadEvents();
 </script>
