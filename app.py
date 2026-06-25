@@ -20,10 +20,10 @@ jwt = JWTManager(app)
 db.init_app(app)
 bcrypt = Bcrypt(app)
 
-#Route simple pour tester que l'application fonctionne
+#Route simple pour renvoyer à la page de connexion
 @app.route('/')
 def home():
-    return "Application Flask opérationnelle !"
+    return render_template('login.html')
 
 #ROUTE : Ajouter un utilisateur
 @app.route('/add_user', methods=['POST'])
